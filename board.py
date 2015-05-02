@@ -1,7 +1,7 @@
 '''
 Created on May 1, 2015
 
-@author: arilab
+@author: John Deyrup
 '''
 from operator import attrgetter
 from random import shuffle
@@ -26,12 +26,6 @@ class Board:
             for player in self.players:
                 player.cards += [self.deck.deal_card()]    
     
-    #Gives player winnings and subtracts that amount from the board
-    def assign_winnings(self, player, amount):
-        player.money += amount
-        self.pot -= amount
-        if(self.pot < 0):
-            print("Negative pot size error")
                         
     #Adds the flop to the board
     def add_flop(self):
@@ -44,6 +38,34 @@ class Board:
     #Adds the river to the board
     def add_river(self):
         pass
+    
+    #Add a players bid to the pot, if the bid is greater than the player's current money add the player's money
+    def do_bid(self, player, amount):
+        player.money -= amount
+        player.bid += amount
+        self.pot += amount
+        
+    #You cannot bid more money than you have so bid up to money in player
+    def try_bid(self, player, amount):
+        if player.money < amount:
+            self.do_bid(player, player.money)
+        else:
+            self.do_bid(player, amount)        
+             
+    #Gives player winnings and subtracts that amount from the board
+    def assign_winnings(self, player, amount):
+        player.money += amount
+        self.pot -= amount
+    
+    #Return bid from pot to player's money
+    def return_bid(self, player):
+        player.money += player.bid
+        self.pot -= player.bid
+        player.bid -= player.bid
+        
+    #Rotates player position moving the last person to the first position and everyone else down one position
+    def rotate_position(self, players):
+        return [players.pop(-1)] + players
             
 #     #Returns all the player on the board    
 #     def get_players(self):
@@ -99,4 +121,3 @@ class Board:
 #     #Updates pot
 #     def update_pot(self, value):
 #         self.pot += value 
-

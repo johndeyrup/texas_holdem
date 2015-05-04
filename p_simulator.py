@@ -9,23 +9,21 @@ Simulates AI and game state of Texas Hold' Em
 from player import Player       
 from board import Board  
 
-def get_player_input(prompt):
-    player_input = input(prompt)
-    return player_input
 
-def player_betting():
-    valid_response = 'CALL', 'CHECK', 'FOLD', 'RAISE'
-    player_response = get_player_input("Please enter call, check, fold, or raise")
-    if player_response.upper() not in valid_response:
-        player_response = get_player_input("I am sorry you did not enter a valid action, please type call, check, fold, or raise")
                  
-#Create group of players
+#Create group of players 
 player_one = Player('P1', 100)
 player_two = Player('P2', 100)
 
-#Creates your board, which creates cards, deck, and shuffles the player order
-board = Board([player_one, player_two])
+#Creates your board, with players and a starting blind size
+board = Board([player_one, player_two], 10)
+board.players_join_round()
+board.deduct_blinds()
 board.deal_cards()
+board.betting_round()
+for player in board.players:
+    print(player.get_stats())
+# board.betting_round(board.players)
 # #If there is ever one person in the betting round, the hand ends and the player gets his bid back, plus the bid of any player less than or equal to his bid
 #     #Betting starts with the first player and ends with last player(big blind)
 #     #Each player can raise, call, check, or fold

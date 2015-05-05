@@ -13,11 +13,31 @@ def get_player_input(prompt):
     player_input = input(prompt)
     return player_input
 
-def player_betting():
+def valid_response(response):
     valid_response = 'CALL', 'CHECK', 'FOLD', 'RAISE'
-    player_response = get_player_input("Please enter call, check, fold, or raise")
-    if player_response.upper() not in valid_response:
-        player_response = get_player_input("I am sorry you did not enter a valid action, please type call, check, fold, or raise")
+    if response.upper() in valid_response:
+        return True
+    else:
+        return False
+
+def get_valid_response(response):
+    if valid_response(response) == False:
+        get_valid_response(get_player_input("I am sorry you did not enter a valid action, please type call, check, fold, or raise"))
+    else:
+        return response
+    
+def player_betting():
+    response = get_valid_response(get_player_input("Please enter call, check, fold, or raise"))
+    if response == 'CALL':
+        pass
+    elif response == 'CHECK':
+        pass
+    elif response == 'FOLD':
+        pass
+    elif response == 'RAISE':
+        pass
+    else:
+        print("Invalid response type")
                  
 #Create group of players
 player_one = Player('P1', 100)

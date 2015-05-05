@@ -6,38 +6,45 @@ Created on May 1, 2015
 from operator import attrgetter
 from random import shuffle
 from deck import Deck
+from player import Player
 #Board class shows players and community cards
 class Board:
     
     #Constructs variables in board object, you cannot create a board without players
-    def __init__(self, players):
+    def __init__(self, players, blind_size):
         self.deck = Deck()
         self.players = players
         self.community_cards = []
         self.pot = 0
+        self.blind = blind_size
         self.shuffle_player_order()
     
     def shuffle_player_order(self):
         shuffle(self.players)
     
+    def deduct_blinds(self):
+        small_blind = self.blind
+        big_blind = self.blind*2
+        self.try_bid(self.players[-2], small_blind)
+        self.try_bid(self.players[-1], big_blind)
+
     #Deals out two cards to each player, each player is deal a card and then each player is dealt another card again    
     def deal_cards(self):
         for i in range(2):
             for player in self.players:
                 player.cards += [self.deck.deal_card()]    
-    
-                        
+                            
     #Adds the flop to the board
     def add_flop(self):
-        pass
+        self.community_cards = self.deck.do_flop()
     
     #Add the turn to the board
     def add_turn(self):
-        pass
+        self.community_cards.append(self.deck.do_turn())
     
     #Adds the river to the board
     def add_river(self):
-        pass
+        self.community_cards.append(self.deck.do_turn())
     
     #Add a players bid to the pot, if the bid is greater than the player's current money add the player's money
     def do_bid(self, player, amount):
@@ -56,6 +63,9 @@ class Board:
     def assign_winnings(self, player, amount):
         player.money += amount
         self.pot -= amount
+        
+    def assign_loss(self, player, amount):
+        player.bid -= amount
     
     #Return bid from pot to player's money
     def return_bid(self, player):
@@ -66,6 +76,74 @@ class Board:
     #Rotates player position moving the last person to the first position and everyone else down one position
     def rotate_position(self, players):
         return [players.pop(-1)] + players
+    
+    def get_highest_bid(self):
+        return max([player.bid for player in self.players])
+    
+    def all_bids_equal(self,bids):
+        if len(set(bids)) == 1:
+            return True
+        else:
+            return False
+        
+    def get_greatest_bid(self,player_one, player_two):
+        if(player_one >= player_two):
+            return player_two
+        else:
+            return player_one
+    
+    def players_in_hand(self):
+        return [player for player in self.players if player.is_in_hand == True]
+    
+    def betting_decision(self,player):
+        player_response = player.get_valid_input()
+        if player_response == 'FOLD':
+            player.is_in_hand = False
+        elif player_response == 'CALL':
+            self.try_bid(player, self.get_highest_bid()-player.bid)
+        elif player_response == 'CHECK':
+            if player.bid < self.get_highest_bid():
+                print('You must bid at least the highest bid to check')
+                self.betting_decision(player)
+        elif player_response == 'RAISE':
+            self.try_raise(player)
+            
+    def try_raise(self, player):
+        try:
+            raise_amount = int(player.get_player_input("Enter the amount you would like to raise"))
+            if raise_amount + player.bid < self.get_highest_bid():
+                print('You must enter at least the highest bid %s' % self.get_highest_bid())
+                self.try_raise(player)
+            else:
+                self.try_bid(player, raise_amount)
+        except:
+            print('Please enter a valid integer input; i.e., 1,2,3,4')
+            self.try_raise(player)           
+    
+    #Do betting round until all people have the same bet or there is only one player left
+    def betting_round(self):
+        for player in self.players_in_hand():
+            if(len(self.players_in_hand())==1):
+                winner = self.players_in_hand()
+                for loser in self.players:
+                    amount = self.get_greatest_bid(winner.bid, loser.bid)
+                    self.assign_winnings(winner, amount)
+                    self.assign_loss(loser, amount)
+                    self.return_bid(loser)
+                self.return_bid(winner)
+            else:
+                self.betting_decision(player)
+        if self.all_bids_equal([player.bid for player in self.players_in_hand()]) == False:
+            self.betting_round()
+            
+    #If the player has money have them join the round            
+    def players_join_round(self):
+        for player in self.players:
+            if player.money > 0:
+                player.is_in_hand = True
+            
+    
+            
             
 #     #Returns all the player on the board    
 #     def get_players(self):

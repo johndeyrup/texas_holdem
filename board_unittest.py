@@ -10,12 +10,12 @@ from player import Player
 class Test(unittest.TestCase):
             
     def test_board_shuffle(self):
-        new_board = Board([1,2,3,4,5])
+        new_board = Board([1,2,3,4,5],10)
         new_board.shuffle_player_order()
         self.assertNotEqual([1,2,3,4,5],new_board.players,'not shuffled')
     
     def setUp(self):
-        self.board = Board([Player("Play_one", 100), Player("Player_two",100)])
+        self.board = Board([Player("Play_one", 100), Player("Player_two",100)],10)
             
     def test_dealt_two_cards(self):
         self.board.deal_cards()
@@ -30,8 +30,7 @@ class Test(unittest.TestCase):
         for player in self.board.players:
             self.assertEqual(player.cards, expected_cards[position], 'Cards not dealt properly')
             position += 1
-        
-    
+           
     def test_do_bid_pot_size(self):
         for player in self.board.players:
             self.assertEqual(player.bid, 0)
@@ -65,7 +64,46 @@ class Test(unittest.TestCase):
             self.assertEqual(self.board.pot, previous_pot-10)
             
     def test_rotate_players(self):
-        self.assertEqual(self.board.rotate_position([1,2,3,4,5]), [5,1,2,3,4])
+        self.assertEqual(self.board.rotate_position([1,2]), [2,1])
+        self.assertEqual(self.board.rotate_position([1,2,3]),[3,1,2])
+        
+    def test_flop(self):
+        expected = self.board.deck.deck[1:4]
+        self.board.add_flop()
+        self.assertEqual(expected, self.board.community_cards, 'expected: %s \n community cards: %s' % 
+                         ([card.get_properties() for card in expected], 
+                          [card.get_properties() for card in self.board.community_cards]))
+    
+    def test_flop_turn_river(self):
+        first_eight_cards = self.board.deck.deck[:8]
+        expected = self.board.deck.deck[1:4] + [self.board.deck.deck[5]]+ [self.board.deck.deck[7]]
+        self.board.add_flop()
+        self.board.add_turn()
+        self.board.add_river()
+        self.assertEqual(expected,self.board.community_cards, '\n expected: %s \n community cards: %s \n deck draw: %s' %
+                         ([card.get_properties() for card in expected],
+                         [card.get_properties() for card in self.board.community_cards],
+                         [card.get_properties() for card in first_eight_cards]))
+        
+    def test_deduct_blinds(self):
+        self.board.deduct_blinds()
+        #Second to last player has the big blind
+        self.assertEqual(self.board.players[-2].bid, 10)
+        self.assertEqual(self.board.players[-1].bid, 20)
+        
+    def test_deduct_blinds_all_money(self):
+        #Blind bigger than players money
+        self.board.blind = 110
+        self.board.deduct_blinds()
+        self.assertEqual(self.board.players[-2].bid, 100)
+        
+    def test_highest_bid(self):
+        self.board.deduct_blinds()
+        self.assertEqual(self.board.get_highest_bid(), 20, 'highest bid %s' % self.board.get_highest_bid())
+        
+    def test_all_bids_equal(self):
+        self.assertFalse(self.board.all_bids_equal([1,2,3,4]))
+        self.assertTrue(self.board.all_bids_equal([1,1,1,1,1]))
 
 
 if __name__ == "__main__":

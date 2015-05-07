@@ -62,10 +62,10 @@ class Board:
     #Gives player winnings and subtracts that amount from the board
     def assign_winnings(self, player, amount):
         player.money += amount
-        self.pot -= amount
         
     def assign_loss(self, player, amount):
         player.bid -= amount
+        self.pot -= amount
     
     #Return bid from pot to player's money
     def return_bid(self, player):
@@ -86,11 +86,11 @@ class Board:
         else:
             return False
         
-    def get_greatest_bid(self,player_one, player_two):
-        if(player_one >= player_two):
-            return player_two
+    def get_greatest_bid(self,player_one_bid, player_two_bid):
+        if(player_one_bid >= player_two_bid):
+            return player_two_bid
         else:
-            return player_one
+            return player_one_bid
     
     def players_in_hand(self):
         return [player for player in self.players if player.is_in_hand == True]
@@ -118,21 +118,28 @@ class Board:
                 self.try_bid(player, raise_amount)
         except:
             print('Please enter a valid integer input; i.e., 1,2,3,4')
-            self.try_raise(player)           
+            self.try_raise(player)
+            
+    def win_by_fold(self):
+        losers = [player for player in self.players if player.is_in_hand == False and player.bid > 0]
+        winner = self.players_in_hand()[0]
+        for loser in losers:
+            amount = self.get_greatest_bid(winner.bid, loser.bid)
+            self.assign_winnings(winner,amount)
+            self.assign_loss(loser, amount)
+            self.return_bid(loser)
+        self.return_bid(winner)
+       
     
     #Do betting round until all people have the same bet or there is only one player left
     def betting_round(self):
         for player in self.players_in_hand():
             if(len(self.players_in_hand())==1):
-                winner = self.players_in_hand()
-                for loser in self.players:
-                    amount = self.get_greatest_bid(winner.bid, loser.bid)
-                    self.assign_winnings(winner, amount)
-                    self.assign_loss(loser, amount)
-                    self.return_bid(loser)
-                self.return_bid(winner)
+                self.win_by_fold()     
             else:
                 self.betting_decision(player)
+                if(len(self.players_in_hand())==1):
+                    self.win_by_fold()     
         if self.all_bids_equal([player.bid for player in self.players_in_hand()]) == False:
             self.betting_round()
             

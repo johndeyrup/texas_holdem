@@ -5,7 +5,6 @@ Created on Apr 23, 2015
 @author: arilab
 '''
 import unittest
-<<<<<<< HEAD
 from p_simulator import valid_response
 
 class TestPokerSimulator(unittest.TestCase):

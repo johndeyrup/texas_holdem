@@ -9,48 +9,33 @@ Simulates AI and game state of Texas Hold' Em
 from player import Player       
 from board import Board  
 
-
-<<<<<<< HEAD
-def valid_response(response):
-    valid_response = 'CALL', 'CHECK', 'FOLD', 'RAISE'
-    if response.upper() in valid_response:
-        return True
-    else:
-        return False
-
-def get_valid_response(response):
-    if valid_response(response) == False:
-        get_valid_response(get_player_input("I am sorry you did not enter a valid action, please type call, check, fold, or raise"))
-    else:
-        return response
-    
-def player_betting():
-    response = get_valid_response(get_player_input("Please enter call, check, fold, or raise"))
-    if response == 'CALL':
-        pass
-    elif response == 'CHECK':
-        pass
-    elif response == 'FOLD':
-        pass
-    elif response == 'RAISE':
-        pass
-    else:
-        print("Invalid response type")
-=======
->>>>>>> origin/master
-                 
+def print_out_board():
+    for card in board.community_cards:
+        print(card.get_properties())
+    for player in board.players:
+        print(player.get_stats())
+                     
 #Create group of players 
 player_one = Player('P1', 100)
 player_two = Player('P2', 100)
 
 #Creates your board, with players and a starting blind size
 board = Board([player_one, player_two], 10)
+print('Players are added to board')
+print_out_board()
 board.players_join_round()
+print('Players join round')
+print_out_board()
 board.deduct_blinds()
+print('Blinds are added to pot')
+print_out_board()
+print("Pot",board.pot)
+print_out_board()
 board.deal_cards()
+print("cards are dealt")
+print_out_board()
 board.betting_round()
-for player in board.players:
-    print(player.get_stats())
+print_out_board()
 # board.betting_round(board.players)
 # #If there is ever one person in the betting round, the hand ends and the player gets his bid back, plus the bid of any player less than or equal to his bid
 #     #Betting starts with the first player and ends with last player(big blind)

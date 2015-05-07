@@ -16,6 +16,8 @@ class Test(unittest.TestCase):
     
     def setUp(self):
         self.board = Board([Player("Play_one", 100), Player("Player_two",100)],10)
+        self.multi_board = Board([Player("Play_one", 100), Player("Player_two",100), 
+                                  Player('Player_three',100), Player('Player_four',100)],10)
             
     def test_dealt_two_cards(self):
         self.board.deal_cards()
@@ -104,7 +106,41 @@ class Test(unittest.TestCase):
     def test_all_bids_equal(self):
         self.assertFalse(self.board.all_bids_equal([1,2,3,4]))
         self.assertTrue(self.board.all_bids_equal([1,1,1,1,1]))
-
+        
+    def test_get_biggest_bid_between_players(self):
+        self.board.deduct_blinds()
+        self.board.get_greatest_bid(self.board.players[0].bid, self.board.players[1].bid)
+        
+    def test_win_by_fold(self):
+        self.board.deduct_blinds()
+        self.board.players[0].is_in_hand = False
+        self.board.players[1].is_in_hand = True
+        self.board.win_by_fold()
+        self.assertEqual(self.board.players[0].bid,0)
+        self.assertEqual(self.board.players[1].bid, 0)
+        self.assertEqual(self.board.pot, 0)
+        self.assertEqual(self.board.players[0].money, 90)
+        self.assertEqual(self.board.players[1].money, 110)
+    
+    def test_multi_board(self):
+        self.multi_board.players[0].is_in_hand = False
+        self.multi_board.players[1].is_in_hand = True
+        self.multi_board.players[2].is_in_hand = False
+        self.multi_board.players[3].is_in_hand = False
+        self.multi_board.players[0].bid = 10
+        self.multi_board.players[1].bid = 20
+        self.multi_board.players[2].bid = 30
+        self.multi_board.players[3].bid = 20
+        self.multi_board.pot = 80
+        self.multi_board.win_by_fold()
+        for player in self.multi_board.players:
+            self.assertEqual(player.bid, 0, 'Player: %s, player money: %s' % (player.name, player.bid))
+        self.assertEqual(self.multi_board.players[0].money,100) 
+        self.assertEqual(self.multi_board.players[1].money,170)     
+        self.assertEqual(self.multi_board.players[2].money, 110)
+        self.assertEqual(self.multi_board.players[3].money, 100)
+        self.assertEqual(self.multi_board.pot,0)
+    
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -20,16 +20,24 @@ class TestPokerSimulator(unittest.TestCase):
         p2.hand_value = 8.1
         p3.hand_value = 8.2
         p4.hand_value = 11
-        p5.hand_value = 11
+        p5.hand_value = 12
         players = [p1,p2,p3,p4,p5]
-        sorted_list = []
-        for k,g in psim.sort_player_rankings(players):
-            print(k)
-            sorted_list.append(list(g))
-        for group in sorted_list:
-            for player in group:
-                print(group)
-                print(player.hand_value)
+        for player in players:
+            player.bid = 10
+        sorted_players = psim.sort_player_rankings(players)
+#         for player in sorted_players:
+#             print(player[0].get_stats())
+        psim.assign_hand_win(sorted_players)
+        
+        
+        
+#         for k,g in psim.sort_player_rankings(players):
+#             print(k)
+#             sorted_list.append(list(g))
+#         for group in sorted_list:
+#             for player in group:
+#                 print(group)
+#                 print(player.hand_value)
 #         for player in psim.sort_player_rankings(players):
 #             print(player.get_stats())
         

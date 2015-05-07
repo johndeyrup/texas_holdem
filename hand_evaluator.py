@@ -14,7 +14,6 @@ straights = [card_primes[x:x+5] for x in range(len(card_primes)-4)]
 unique_straights = [41*2*3*5*7]
 for straight in straights:
     unique_straights.append(functools.reduce(lambda x,y: x*y, straight))
-print(unique_straights)
     
     
 def sort_by_number(cards):

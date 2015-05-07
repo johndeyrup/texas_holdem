@@ -11,7 +11,6 @@ from board import Board
 import hand_evaluator
 from card import Card
 from operator import attrgetter
-from itertools import groupby
 
 def print_out_board(description):
     print(description)
@@ -24,12 +23,9 @@ def print_out_board(description):
 def enough_players():
     if len(board.players_in_hand()) > 1:
         return True
-    
-def sort_player_rankings(players):
-    sorted_players = groupby(players, lambda x:x.hand_value)
-#     sorted_players = sorted(players,key=attrgetter('hand_value'),reverse=True)
-    return sorted_players
-           
+                
+            
+            
                      
 #Create group of players 
 player_one = Player('P1', 100)

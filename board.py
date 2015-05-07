@@ -7,6 +7,7 @@ from operator import attrgetter
 from random import shuffle
 from deck import Deck
 from player import Player
+from itertools import groupby
 #Board class shows players and community cards
 class Board:
     
@@ -120,6 +121,20 @@ class Board:
             print('Please enter a valid integer input; i.e., 1,2,3,4')
             self.try_raise(player)
             
+    def sort_player_rankings(self, players):
+        '''
+        Sorts players from highest hand value to lowest then groups identical hand values
+        '''
+        sorted_players = sorted(players,key=attrgetter('hand_value'),reverse=True)
+        grouped_players = groupby(sorted_players, lambda x:x.hand_value)
+        final_list = []
+        for val, player_group in grouped_players:
+            temp_list = []
+            for player in player_group:
+                temp_list.append(player)
+            final_list.append(temp_list)
+        return final_list
+            
     def win_by_fold(self):
         losers = [player for player in self.players if player.is_in_hand == False and player.bid > 0]
         winner = self.players_in_hand()[0]
@@ -129,6 +144,29 @@ class Board:
             self.assign_loss(loser, amount)
             self.return_bid(loser)
         self.return_bid(winner)
+        
+    def assign_hand_win(self,players):           
+        '''
+        Assigns money to each player until there is no money in the pot
+        '''
+        for player_group in players:
+            if self.pot > 0: 
+                group_size = len(player_group)
+                if(group_size > 1):
+                    sorted_bids = sorted(player_group, key=attrgetter('bid'))
+                else:
+                    winner = player_group[0]
+                    for loser in self.get_losers(winner):
+                        amount = self.get_greatest_bid(winner.bid, loser.bid)
+                        self.assign_winnings(winner,amount)
+                        self.assign_loss(loser, amount)
+                        self.return_bid(loser)
+                    self.return_bid(winner)
+#         return self.players
+    
+    def get_losers(self, winner):
+        losers = [player for player in self.players if player.bid>0 and player != winner]
+        return losers
     
     def additional_bidding_rounds(self):
         '''

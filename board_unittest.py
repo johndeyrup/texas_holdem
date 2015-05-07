@@ -140,6 +140,56 @@ class Test(unittest.TestCase):
         self.assertEqual(self.multi_board.players[2].money, 110)
         self.assertEqual(self.multi_board.players[3].money, 100)
         self.assertEqual(self.multi_board.pot,0)
+        
+    def test_sort_player_ranking(self):
+        p1 = Player('p1',100)
+        p2 = Player('p2', 100)
+        p3 = Player('p3', 100)
+        p4 = Player('p4', 100)
+        p5 = Player('p5', 120)
+        p1.hand_value = 10
+        p2.hand_value = 8.1
+        p3.hand_value = 8.2
+        p4.hand_value = 11
+        p5.hand_value = 12
+        players = [p1,p2,p3,p4,p5]
+        for player in players:
+            player.bid = 10
+        test_board = Board(players, 10)
+        test_board.pot = 50
+        ranked_players = test_board.sort_player_rankings(test_board.players)
+        test_board.assign_hand_win(ranked_players)
+        self.assertEqual(p5.money, 170)
+        self.assertEqual(test_board.pot, 0)
+        for player in test_board.players:
+            self.assertEqual(player.bid, 0)
+            
+    def test_bids_unequal(self):
+        p1 = Player('p1',100)
+        p2 = Player('p2', 100)
+        p3 = Player('p3', 100)
+        p4 = Player('p4', 100)
+        p5 = Player('p5', 120)
+        p1.hand_value = 10
+        p2.hand_value = 8.1
+        p3.hand_value = 8.2
+        p4.hand_value = 11
+        p5.hand_value = 12
+        players = [p1,p2,p3,p4,p5]
+        p1.bid = 10
+        p2.bid = 20
+        p3.bid = 40
+        p4.bid = 15
+        p5.bid = 30
+        test_board = Board(players, 10)
+        test_board.pot = 50
+        ranked_players = test_board.sort_player_rankings(test_board.players)
+        test_board.assign_hand_win(ranked_players)
+        self.assertEqual(p5.money, 225)
+        self.assertEqual(p3.money,110)
+        self.assertEqual(test_board.pot, 0)
+        for player in test_board.players:
+            self.assertEqual(player.bid, 0)
     
 
 if __name__ == "__main__":

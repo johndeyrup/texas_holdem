@@ -129,19 +129,33 @@ class Board:
             self.assign_loss(loser, amount)
             self.return_bid(loser)
         self.return_bid(winner)
-       
+    
+    def additional_bidding_rounds(self):
+        '''
+        Each player makes a bet until all bets are or there is one player
+        '''
+        while self.all_bids_equal([player.bid for player in self.players_in_hand()]) == False:
+            for player in self.players_in_hand():
+                if len(self.players_in_hand())==1:
+                    self.win_by_fold()
+                self.betting_decision(player)
+                if self.all_bids_equal([player.bid for player in self.players_in_hand()]) == True:
+                    break      
     
     #Do betting round until all people have the same bet or there is only one player left
     def betting_round(self):
+        '''
+        Betting continues until all bets are equal or there is one player
+        '''
+        #Every player gets to bet on the first round
         for player in self.players_in_hand():
-            if(len(self.players_in_hand())==1):
+            if len(self.players_in_hand())==1 :
                 self.win_by_fold()     
             else:
                 self.betting_decision(player)
-                if(len(self.players_in_hand())==1):
-                    self.win_by_fold()     
+        #Every other round of bidding       
         if self.all_bids_equal([player.bid for player in self.players_in_hand()]) == False:
-            self.betting_round()
+            self.additional_bidding_rounds()
             
     #If the player has money have them join the round            
     def players_join_round(self):

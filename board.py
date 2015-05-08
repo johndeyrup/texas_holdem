@@ -145,24 +145,59 @@ class Board:
             self.return_bid(loser)
         self.return_bid(winner)
         
+    def distribute_tie_winnings(self, sub_group):
+        sorted_players = sorted(sub_group, key=attrgetter('bid'))
+        for player in sorted_players:
+            amount_to_split = 0
+            losers = [player for player in self.players if player.bid > 0 and player not in sorted_players]
+            for loser in losers:
+                amount = self.get_greatest_bid(player.bid, loser.bid)
+                self.assign_loss(loser, amount)
+                amount_to_split += amount
+            players_to_split = sorted_players[sorted_players.index(player):]
+            self.return_partial_bid(sorted_players)
+            self.split_money(players_to_split, amount_to_split)
+
+    def split_money(self, subgroup, amount):
+        split_amount = amount / len(subgroup)
+        if amount % len(subgroup) == 0:
+            for player in subgroup:
+                player.money += split_amount
+        else:
+            for i in range(len(subgroup)):
+                if i < amount%len(subgroup):
+                    subgroup[i].money += int(split_amount) + 1
+                else:
+                    subgroup[i].money += int(split_amount)
+                
+    def return_partial_bid(self, subgroup):
+        #Every player with money still in the subgroup 
+        sub_group = [player for player in subgroup if player.bid > 0]
+        #The minimum bid still remaining this is the current player in this for loop
+        if sub_group != []:
+            min_bid = min([player.bid for player in sub_group])
+            for player in sub_group:
+                player.bid -= min_bid
+                player.money += min_bid
+                self.pot -= min_bid
+            
     def assign_hand_win(self,players):           
         '''
         Assigns money to each player until there is no money in the pot
         '''
-        for player_group in players:
+        ranked_players = self.sort_player_rankings(players)
+        for player_group in ranked_players:
             if self.pot > 0: 
                 group_size = len(player_group)
                 if(group_size > 1):
-                    sorted_bids = sorted(player_group, key=attrgetter('bid'))
+                    self.distribute_tie_winnings(player_group)   
                 else:
                     winner = player_group[0]
                     for loser in self.get_losers(winner):
                         amount = self.get_greatest_bid(winner.bid, loser.bid)
                         self.assign_winnings(winner,amount)
                         self.assign_loss(loser, amount)
-                        self.return_bid(loser)
                     self.return_bid(winner)
-#         return self.players
     
     def get_losers(self, winner):
         losers = [player for player in self.players if player.bid>0 and player != winner]
@@ -201,60 +236,3 @@ class Board:
             if player.money > 0:
                 player.is_in_hand = True
             
-    
-            
-            
-#     #Returns all the player on the board    
-#     def get_players(self):
-#         return self.players
-#     
-#     #Returns all the community cards visible
-#     def get_community_cards(self):
-#         return self.community_cards   
-#     
-#     #Returns pot
-#     def get_pot(self):
-#         return self.pot
-#     
-#     #Returns the highest bid on the board
-#     def get_highest_bid(self):
-#         highest_bid = (sorted(self.players, key=attrgetter('bid')))[-1].get_bid()
-#         return highest_bid
-#     
-#     #Returns True if all bids are equal
-#     def get_all_bids_equal(self):
-#         player_bids = [player.get_bid() for player in self.players if player.get_in_hand() == True]
-#         if len(set(player_bids)) == 1:
-#             return True
-#         else:
-#             return False
-#     
-#     #Returns all players in hand
-#     def get_players_playing(self):
-#         return [player for player in self.players if player.is_in_hand == True]
-#     
-# #     #Check if there are two players in hand
-# #     def two_players_remaining(self):
-# #         if(len(get_players_playing())==2):
-# #             return True
-# #         else:
-# #             return False          
-# #     
-# #     #Check if there is one player in hand
-# #     def one_player_remaining(self):
-# #         if(len(get_players_playing())==1):
-# #             return True
-# #         else:
-# #             return False        
-#     
-#     #Return board stats
-#     def get_board_stats(self):
-#         print("Pot size: $%s" % self.pot)
-#         stats_list = ["Name: ", "Bid: ", "Money: $", "Position: ", "Still playing: ", "Card 1: ", "Card 2: "]
-#         for player in self.players:
-#             combined_list = [stats_list[i]+str(player.get_stats()[i]) for i in range(len(stats_list))]
-#             print(combined_list)
-#             
-#     #Updates pot
-#     def update_pot(self, value):
-#         self.pot += value 

@@ -21,7 +21,7 @@ class Player:
             
     def get_valid_input(self):
         valid_response = 'CALL', 'CHECK', 'FOLD', 'RAISE'
-        player_response = self.get_player_input("Please enter call, check, fold, or raise").upper()
+        player_response = self.get_player_input("%s: Please enter call, check, fold, or raise" % self.name).upper()
         while player_response not in valid_response:
             player_response = self.get_player_input("I am sorry you did not enter a valid action, please type call, check, fold, or raise").upper()
         else:

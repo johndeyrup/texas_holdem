@@ -33,34 +33,37 @@ player_two = Player('P2', 100)
  
 #Creates your board, with players and a starting blind size
 board = Board([player_one, player_two], 10)
-# print_out_board('Players added to board')
-# board.players_join_round()
-# print_out_board('Players join round')
-# board.deduct_blinds()
-# print_out_board('Blinds are added to pot')
-# board.deal_cards()
-# print_out_board("cards are dealt")
-# board.betting_round()
-# if enough_players():
-#     print_out_board("Players bet")
-#     board.add_flop()
-#     print_out_board('Flop')
-#     board.betting_round()
-#     print_out_board('Post flop betting results')
-#     if enough_players():
-#         board.add_river()
-#         print_out_board('River')
-#         board.betting_round()
-#         print_out_board('Post river betting results')
-#         if enough_players():
-#             board.add_turn()
-#             print_out_board('Turn')
-#             board.betting_round()
-#             print_out_board('Post turn betting results')
-#             if enough_players():
-#                 for player in board.players_in_hand():
-#                     player.hand_value, best_hand = hand_evaluator.find_best_hand(player.cards, board.community_cards)
-#                     print(player.hand_value)
-#                     print(list(map(Card.get_properties,best_hand)))
-# 
-#                 
+print_out_board('Players added to board')
+board.players_join_round()
+print_out_board('Players join round')
+board.deduct_blinds()
+print_out_board('Blinds are added to pot')
+board.deal_cards()
+print_out_board("cards are dealt")
+board.betting_round()
+if enough_players():
+    print_out_board("Players bet")
+    board.add_flop()
+    print(board.players)
+    if len(board.players) == 2:
+        board.players = [board.players[1],board.players[0]]
+        print(board.players)
+    print_out_board('Flop')
+    board.betting_round()
+    print_out_board('Post flop betting results')
+    if enough_players():
+        board.add_river()
+        print_out_board('River')
+        board.betting_round()
+        print_out_board('Post river betting results')
+        if enough_players():
+            board.add_turn()
+            print_out_board('Turn')
+            board.betting_round()
+            print_out_board('Post turn betting results')
+            if enough_players():
+                for player in board.players_in_hand():
+                    player.hand_value, best_hand = hand_evaluator.find_best_hand(player.cards, board.community_cards)
+                    print(player.name,[card.get_properties() for card in best_hand],player.hand_value)
+                board.assign_hand_win(board.players_in_hand())
+                print_out_board('Money assigned')

@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+	<body>
+		<title>Poker Table</title>
+		<img id="ptable" src="{{ url_for('static',
+		   filename='poker_table.gif')}}" alt="error display" width="800" height="600">
+		<canvas id="myCanvas" width="800" height="600">
+		Your browser does not support html5 canvas tag.
+		</canvas>
+		<script>
+		var c = document.getElementById("myCanvas")
+		var ctx = c.getContent("2d);
+		var img = document.getElementById("ptable")
+		ctx.drawImage(img)
+		</script>
+	<body>
+</html>

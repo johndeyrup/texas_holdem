@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+    <title>Easel Test</title>
+    <head>
+    <script src="https://code.createjs.com/easeljs-0.8.0.min.js"></script>
+    
+    <script>
+        var stage;
+        var poker_table;
+        
+        function init() {
+            stage = new createjs.Stage("myCanvas");
+            
+            poker_table = new Image();
+            poker_table.src = "images/poker_table.gif";
+            poker_table.onload = handleImageLoad;
+            
+            var fold = new Image();
+            fold.src = "images/fold_button.gif";
+            fold.onload = handleImageLoad;
+            loader = new createjs.LoadQueue(false);
+            loader.addEventListener("complete", handleImageLoad);
+        }
+        
+        function handleImageLoad(event) {
+            var image = event.target;
+            var bitmap = new createjs.Bitmap(image);
+            stage.addChild(bitmap);
+            Ticker.addListener(window);
+        }
+        
+        function tick() {
+            stage.update();
+        }
+        
+    
+    </script>
+    
+    </head>
+    <body onload="init();">
+        <canvas id="myCanvas" width="960" height="580"></canvas>
+    </body>
+
+</html>

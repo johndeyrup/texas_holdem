@@ -1,15 +1,44 @@
-{% extends "base_template.html" %}
-{% block body %}
-		<title>Poker Table</title>
-		<img id="ptable" src="{{ url_for('static',
-		   filename='poker_table.gif')}}" alt="error display" width="800" height="600">
-		<canvas id="myCanvas" width="800" height="600">
-		Your browser does not support html5 canvas tag.
-		</canvas>
-		<script>
-		var c = document.getElementById("myCanvas")
-		var ctx = c.getContent("2d);
-		var img = document.getElementById("ptable")
-		ctx.drawImage(img)
-		</script>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Charity Poker</title>
+        <link href="site.css" rel="stylesheet">
+        <script src="https://code.createjs.com/easeljs-0.8.0.min.js"></script>
+        <script src=script.js></script>
+
+        <script>
+            function init() {
+                var canvas = document.getElementById("myCanvas");
+                var stage = new Stage(canvas);
+                var text = new Text("Hi John!", "36px Arial", "#666");
+                text.x = 200;
+                text.y = 200;
+                stage.addChild(text);
+                stage.update();
+                
+            }
+        </script>
+    </head>
+    
+    </head>
+    
+    <body onload="init();">
+        <canvas id="myCanvas" width="960" height="580"></canvas>
+        <!--<nav id="nav01"></nav>
+        <div id="main">
+        <h1>Poker Room</h1>
+        <img id='poker_table' src='images/poker_table.gif' alt='Poker Table' width="800" height="600">
+        </div>
+        <canvas id="myCanvas" width="960" height="580"> Alt Canvas</canvas>*/-->
+        
+    
+    </body>
+    
+    <!--<body onload="drawBoard()">
+    
+        
+        
+    <script src=script.js></script>
+    </body>-->
+</html>
